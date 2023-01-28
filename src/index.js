@@ -23,6 +23,8 @@ function getSidAddress(networkId) {
     return '0x08CEd32a7f3eeC915Ba84415e9C07a7286977956'
   } else if ([421613].includes(id)) {
     return '0x1f70fc8de5669eaa8C9ce72257c94500DC5ff2E4'
+  } else if ([42161].includes(id)) {
+    return '0x72f59f22d32d2218e260fcd17ef26b8dd17abd7f'
   }
 }
 
