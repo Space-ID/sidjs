@@ -24,7 +24,7 @@ function getSidAddress(networkId) {
   } else if ([421613].includes(id)) {
     return '0x1f70fc8de5669eaa8C9ce72257c94500DC5ff2E4'
   } else if ([42161].includes(id)) {
-    return '0x72f59f22d32d2218e260fcd17ef26b8dd17abd7f'
+    return '0x4a067EE58e73ac5E4a43722E008DFdf65B2bF348'
   }
 }
 
