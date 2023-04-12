@@ -50,7 +50,8 @@ function validateLabelLength(name) {
     if (!name) {
         return false
     }
-    if (toArray(name).length < 3) {
+    const len = toArray(name).length
+    if ( len < 3 || len > 512) {
         return false
     }
     let normalizedValue
@@ -59,13 +60,14 @@ function validateLabelLength(name) {
     } catch (e) {
         normalizedValue = name
     }
-    if (normalizedValue.length < 3) {
+    if (normalizedValue.length < 3 || normalizedValue.length > 512) {
         return false
     }
     return true
 }
 
-function validateDomains(value) {
+function validateDomains(value, tld) {
+    const isNotEns = tld?.toLowerCase() !== 'eth'
     const nospecial = /^[^*|\\":<>[\]{}`\\\\()';@&$]+$/u
     // black list
     // ASCII中的十进制: 0-44, 46-47, 58-94, 96, 123-127;
@@ -73,9 +75,9 @@ function validateDomains(value) {
     const blackList =
         // eslint-disable-next-line no-control-regex
         /[\u0000-\u002c\u002e-\u002f\u003a-\u005e\u0060\u007b-\u007f\u200b\u200c\u200d\ufeff]/g
-    if (!nospecial.test(value)) {
+    if (isNotEns && !nospecial.test(value)) {
         return false
-    } else if (blackList.test(value)) {
+    } else if (isNotEns && blackList.test(value)) {
         return false
     } else if (!ensValidate(value)) {
         return false
@@ -103,7 +105,7 @@ function validateName(name) {
     if (!validateLabelLength(domain) && !whitelist.includes(name.toLowerCase())) {
         throw new Error('Invalid name');
     }
-    if (!validateDomains(domain)) throw new Error('Invalid name');
+    if (!validateDomains(domain, suffix)) throw new Error('Invalid name');
     const normalizedArray = nameArray.map((label) => {
         return isEncodedLabelhash(label) ? label : ensNamehash.normalize(label)
     })
