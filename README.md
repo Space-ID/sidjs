@@ -7,9 +7,9 @@ SIDjs integrates the SID contract and ENS and supports all the ENSjs APIs,  you 
 ## Overview of the API
 
 ### Installation
-Install @siddomains/sidjs, alongside [web3](https://www.npmjs.com/package/web3).
+Install @siddomains/sidjs, alongside [Ethers v5](https://www.npmjs.com/package/ethers/v/5.7.2).
 ```
-npm install @siddomains/sidjs web3
+npm install @siddomains/sidjs ethers@5.7.2
 ```
 ### Getting Started
 All that's needed to get started is a web3 provider instance, you should pass it and select network id when creating a new SID instance.
@@ -17,13 +17,13 @@ All that's needed to get started is a web3 provider instance, you should pass it
 // bsc test domain example
 const SID = require('@siddomains/sidjs').default      
 const SIDfunctions = require('@siddomains/sidjs')                                                                                                                                                                                
-const Web3 = require('web3')                                                                                                                
+const ethers = require('ethers')                                                                                                                
 
 let sid 
 
 async function main(name) {
   const infura = "https://data-seed-prebsc-1-s1.binance.org:8545/"  
-  const provider = new Web3.providers.HttpProvider(infura)
+  const provider = new ethers.providers.JsonRpcProvider(infura)
   sid = new SID({ provider, sidAddress: SIDfunctions.getSidAddress('97') })
 
   const address = await sid.name(name).getAddress() // 0x123                                                                                
@@ -38,12 +38,12 @@ main("resolver.bnb")
 const SID = require('@siddomains/sidjs').default      
 const SIDfunctions = require('@siddomains/sidjs')
 const rpc = require('@siddomains/sidjs/dist/constants/rpc')                                                                                                                                                                                
-const Web3 = require('web3')                                                                                                                
+const ethers = require('ethers')                                                                                                                
 
 let sid 
 
 async function main(name) {
-  const provider = new Web3.providers.HttpProvider(rpc.apis.bsc_mainnet)
+  const provider = new new ethers.providers.JsonRpcProvider(rpc.apis.bsc_mainnet)
   sid = new SID({ provider, sidAddress: SIDfunctions.getSidAddress('56') })
 
   const address = await sid.name(name).getAddress() // 0x123                                                                                
@@ -58,13 +58,13 @@ main("resolver.bnb")
 // ens domain example
 const SID = require('@siddomains/sidjs').default      
 const SIDfunctions = require('@siddomains/sidjs')                                                                                                                                                                                
-const Web3 = require('web3')                                                                                                                
+const ethers = require('ethers')                                                                                                                
 
 let sid 
 
 async function main(name) {
   const infura = "https://web3.ens.domains/v1/mainnet"
-  const provider = new Web3.providers.HttpProvider(infura)
+  const provider = new ethers.providers.JsonRpcProvider(infura)
   sid = new SID({ provider, sidAddress: SIDfunctions.getSidAddress('1') })
 
   const address = await sid.name(name).getAddress() // 0x123                                                                                

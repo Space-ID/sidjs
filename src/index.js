@@ -1,16 +1,13 @@
 import {ethers, BigNumber, utils} from 'ethers'
 
-const Provider = ethers.providers.Provider
 import {formatsByName} from '@siddomains/address-encoder'
-import {abi as sidContract} from '@siddomains/sid/build/contracts/SID.json'
-import {abi as resolverContract} from '@siddomains/resolver/build/contracts/Resolver.json'
-import {abi as reverseRegistrarContract} from '@siddomains/sid/build/contracts/ReverseRegistrar.json'
-
-import {emptyAddress, namehash, labelhash, validateName} from './utils'
+import {getSIDContract, getResolverContract, getReverseRegistrarContract} from './utils/contract'
+import {emptyAddress, namehash, labelhash, validateName, normalize} from './utils'
 import {
     encodeContenthash,
     decodeContenthash,
 } from './utils/contents'
+
 
 function getSidAddress(networkId) {
   const id = parseInt(networkId);
@@ -27,17 +24,6 @@ function getSidAddress(networkId) {
   }
 }
 
-function getResolverContract({ address, provider }) {
-  return new ethers.Contract(address, resolverContract, provider)
-}
-
-function getSIDContract({ address, provider }) {
-  return new ethers.Contract(address, sidContract, provider)
-}
-
-function getReverseRegistrarContract({ address, provider }) {
-  return new ethers.Contract(address, reverseRegistrarContract, provider)
-}
 
 async function getAddrWithResolver({name, key, resolverAddr, provider}) {
     try {
@@ -49,7 +35,7 @@ async function getAddrWithResolver({name, key, resolverAddr, provider}) {
         if (addr === '0x' || !addr) return emptyAddress
         return encoder(Buffer.from(addr.slice(2), 'hex'))
     } catch (e) {
-        console.log(e)
+        console.error(e)
         console.warn(
             'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
         )
@@ -371,7 +357,7 @@ export default class SID {
   constructor(options) {
     const { networkId, provider, sidAddress } = options
     let ethersProvider
-    if (Provider.isProvider(provider)) {
+    if (ethers.providers.Provider.isProvider(provider)) {
       //detect ethersProvider
       ethersProvider = provider
     } else {
@@ -459,9 +445,11 @@ export default class SID {
 }
 
 export {
-  namehash,
-  labelhash,
-  getSIDContract,
-  getResolverContract,
-  getSidAddress,
+    namehash,
+    normalize,
+    validateName,
+    labelhash,
+    getSIDContract,
+    getResolverContract,
+    getSidAddress,
 }

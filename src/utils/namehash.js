@@ -1,6 +1,7 @@
 import { isEncodedLabelhash, decodeLabelhash } from './labelhash'
 import namehase from '@ensdomains/eth-ens-namehash'
-const sha3 = require('js-sha3').keccak_256
+import {keccak_256 as sha3} from 'js-sha3'
+
 
 export function namehash(inputName) {
   let node = ''
