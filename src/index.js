@@ -1,17 +1,16 @@
-import { ethers } from 'ethers'
+import {ethers, BigNumber, utils} from 'ethers'
+
 const Provider = ethers.providers.Provider
-import { formatsByName } from '@siddomains/address-encoder'
-import { abi as sidContract } from '@siddomains/sid/build/contracts/SID.json'
-import { abi as resolverContract } from '@siddomains/resolver/build/contracts/Resolver.json'
-import { abi as reverseRegistrarContract } from '@siddomains/sid/build/contracts/ReverseRegistrar.json'
+import {formatsByName} from '@siddomains/address-encoder'
+import {abi as sidContract} from '@siddomains/sid/build/contracts/SID.json'
+import {abi as resolverContract} from '@siddomains/resolver/build/contracts/Resolver.json'
+import {abi as reverseRegistrarContract} from '@siddomains/sid/build/contracts/ReverseRegistrar.json'
 
 import {emptyAddress, namehash, labelhash, validateName} from './utils'
 import {
-  isValidContenthash,
-  encodeContenthash,
-  decodeContenthash,
+    encodeContenthash,
+    decodeContenthash,
 } from './utils/contents'
-const utils = ethers.utils
 
 function getSidAddress(networkId) {
   const id = parseInt(networkId);
@@ -40,25 +39,22 @@ function getReverseRegistrarContract({ address, provider }) {
   return new ethers.Contract(address, reverseRegistrarContract, provider)
 }
 
-async function getAddrWithResolver({ name, key, resolverAddr, provider }) {
-  const nh = namehash(name)
-  try {
-    const Resolver = getResolverContract({
-      address: resolverAddr,
-      provider,
-    })
-    const { coinType, encoder } = formatsByName[key]
-    const addr = await Resolver['addr(bytes32,uint256)'](nh, coinType)
-    if (addr === '0x') return emptyAddress
+async function getAddrWithResolver({name, key, resolverAddr, provider}) {
+    try {
+        const resolver = new ethers.providers.Resolver(provider, resolverAddr, name)
 
-    return encoder(Buffer.from(addr.slice(2), 'hex'))
-  } catch (e) {
-    console.log(e)
-    console.warn(
-      'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
-    )
-    return emptyAddress
-  }
+        const {coinType, encoder} = formatsByName[key]
+        const hexCoinType = utils.hexZeroPad(BigNumber.from(coinType).toHexString(), 32)
+        const addr = await resolver._fetchBytes('0xf1cb7e06', hexCoinType)
+        if (addr === '0x' || !addr) return emptyAddress
+        return encoder(Buffer.from(addr.slice(2), 'hex'))
+    } catch (e) {
+        console.log(e)
+        console.warn(
+            'Error getting addr on the resolver contract, are you sure the resolver address is a resolver contract?'
+        )
+        return emptyAddress
+    }
 }
 
 async function setAddrWithResolver({
@@ -227,9 +223,28 @@ class Name {
     return this.sidWithSigner.setOwner(this.namehash, address)
   }
 
-  async getResolver() {
-    return this.sid.resolver(this.namehash)
-  }
+    async getResolver() {
+        let currentName = this.name;
+        let currentNamehash = this.namehash;
+        while (true) {
+            if (currentName === "" || currentName === ".") {
+                return emptyAddress;
+            }
+            if (!currentName.includes('.')) {
+                return emptyAddress;
+            }
+            const addr = await this.sid.resolver(currentNamehash)
+            if (addr !== emptyAddress) {
+                const resolver = getResolverContract({address: addr, provider: this.provider})
+                if (currentName !== this.name && !(await resolver.supportsInterface("0x9061b923"))) {
+                    return emptyAddress;
+                }
+                return addr
+            }
+            currentName = currentName.split(".").slice(1).join(".");
+            currentNamehash = namehash(currentName);
+        }
+    }
 
   async setResolver(address) {
     if (!address) throw new Error('No resolver address provided!')
@@ -248,17 +263,14 @@ class Name {
     }
   }
 
-  async getAddress(coinId) {
-    const resolverAddr = await this.getResolverAddr()
-    if (parseInt(resolverAddr, 16) === 0) return emptyAddress
-    const Resolver = getResolverContract({
-      address: resolverAddr,
-      provider: this.provider,
-    })
-    if (!coinId) {
-      return Resolver['addr(bytes32)'](this.namehash)
-    }
-    //TODO add coinID
+    async getAddress(coinId) {
+        const resolverAddr = await this.getResolverAddr()
+        if (parseInt(resolverAddr, 16) === 0) return emptyAddress
+        if (!coinId) {
+            const resolver = new ethers.providers.Resolver(this.provider, resolverAddr, this.name)
+            const res = await resolver.getAddress()
+            return res ? res : emptyAddress
+        }
 
     return getAddrWithResolver({
       name: this.name,

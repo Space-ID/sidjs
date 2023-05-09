@@ -51,7 +51,7 @@ function validateLabelLength(name) {
         return false
     }
     const len = toArray(name).length
-    if ( len < 3 || len > 512) {
+    if (len < 3 || len > 512) {
         return false
     }
     let normalizedValue
@@ -89,24 +89,23 @@ function validateName(name) {
     if (!name) {
         throw new Error('Invalid name');
     }
+    const labelArr = name.split('.');
     let domain = name;
     let suffix = '';
-    let i = name.lastIndexOf('.');
-    if (i > 0) {
-        domain = name.substring(0, i);
-        suffix = name.substring(i + 1);
+    if (labelArr.length > 1) {
+        domain = labelArr.slice(0, labelArr.length - 1).join('.');
+        suffix = labelArr[labelArr.length - 1];
     }
-    const nameArray = [domain];
-    if (i > 0) {
-        nameArray.push(suffix)
+    if (labelArr.length === 3 && suffix.toLowerCase() === 'bnb' && labelArr[1].toLowerCase() === 'eth') {
+        domain = labelArr[0]
     }
-    const hasEmptyLabels = nameArray.filter((e) => e.length < 1).length > 0
+    const hasEmptyLabels = labelArr.filter((e) => e.length < 1).length > 0
     if (hasEmptyLabels) throw new Error('Domain cannot have empty labels');
     if (!validateLabelLength(domain) && !whitelist.includes(name.toLowerCase())) {
         throw new Error('Invalid name');
     }
     if (!validateDomains(domain, suffix)) throw new Error('Invalid name');
-    const normalizedArray = nameArray.map((label) => {
+    const normalizedArray = labelArr.map((label) => {
         return isEncodedLabelhash(label) ? label : ensNamehash.normalize(label)
     })
     try {

@@ -56,6 +56,6 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "ethers": "^5.0.13"
+    "ethers": "^5.7.2"
   }
 }
