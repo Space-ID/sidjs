@@ -1,6 +1,6 @@
 {
   "name": "@siddomains/sidjs",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "description": "sid.js v2",
   "main": "dist/index.js",
   "repository": "Space-ID/sidjs",
@@ -56,6 +56,6 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "ethers": "^5.0.13"
+    "ethers": "^5.7.2"
   }
 }
