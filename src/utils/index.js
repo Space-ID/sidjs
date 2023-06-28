@@ -1,6 +1,6 @@
 import {ethers} from 'ethers'
 import {validate as ensValidate} from '@ensdomains/ens-validation'
-import {toArray} from 'lodash'
+import toArray from 'lodash.toarray'
 import {
     isEncodedLabelhash,
     isDecrypted,
@@ -68,16 +68,13 @@ function validateLabelLength(name) {
 
 function validateDomains(value, tld) {
     const isNotEns = tld?.toLowerCase() !== 'eth'
-    const nospecial = /^[^*|\\":<>[\]{}`\\\\()';@&$]+$/u
     // black list
     // ASCII中的十进制: 0-44, 46-47, 58-94, 96, 123-127;
     // unicode: \u200b, \u200c, \u200d, \ufeff
     const blackList =
         // eslint-disable-next-line no-control-regex
         /[\u0000-\u002c\u002e-\u002f\u003a-\u005e\u0060\u007b-\u007f\u200b\u200c\u200d\ufeff]/g
-    if (isNotEns && !nospecial.test(value)) {
-        return false
-    } else if (isNotEns && blackList.test(value)) {
+    if (isNotEns && blackList.test(value)) {
         return false
     } else if (!ensValidate(value)) {
         return false
@@ -113,6 +110,14 @@ function validateName(name) {
     } catch (e) {
         throw e
     }
+}
+
+function normalize(name) {
+    const nameArray = name.split('.')
+    const normalizedArray = nameArray.map((label) => {
+        return isEncodedLabelhash(label) ? label : ensNamehash.normalize(label)
+    })
+    return normalizedArray.join('.')
 }
 
 function isLabelValid(name) {
@@ -179,6 +184,7 @@ export {
     encodeLabelhash,
     // namehash utils
     namehash,
+    normalize,
     // contents utils
     encodeContenthash,
     decodeContenthash,
