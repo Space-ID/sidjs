@@ -73,7 +73,7 @@ function validateDomains(value, tld) {
     // unicode: \u200b, \u200c, \u200d, \ufeff
     const blackList =
         // eslint-disable-next-line no-control-regex
-        /[\u0000-\u002c\u002e-\u002f\u003a-\u005e\u0060\u007b-\u007f\u200b\u200c\u200d\ufeff]/g
+        /[\u0000-\u002c\u002e-\u002f\u003a-\u0040\u005b-\u005e\u0060\u007b-\u007f\u200b\u200c\u200d\ufeff]/g
     if (isNotEns && blackList.test(value)) {
         return false
     } else if (!ensValidate(value)) {
