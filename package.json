@@ -48,12 +48,13 @@
     "@ensdomains/ens-validation": "^0.1.0",
     "@ensdomains/eth-ens-namehash": "^2.0.15",
     "@siddomains/address-encoder": "^0.0.4",
-    "@siddomains/sid-contracts": "0.1.30",
+    "@siddomains/sid-contracts": "^0.1.31",
     "content-hash": "^2.5.2",
     "js-sha3": "^0.8.0",
     "lodash.toarray": "^4.4.0"
   },
   "peerDependencies": {
-    "ethers": "^5.7.2"
+    "ethers": "^5.7.2",
+    "@siddomains/sid-contracts": "^0.1.31"
   }
 }

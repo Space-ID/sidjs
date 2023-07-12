@@ -2463,10 +2463,10 @@
   resolved "https://registry.yarnpkg.com/@siddomains/resolver/-/resolver-0.1.1.tgz#5ee3921fe9d5a10814ff6635710dbd7af3b024b0"
   integrity sha512-cZYaHJN9iXNXeLvaMPDm3p6ymNklDzQ11reIfLMvLi0zP0UGERM+YXCqwzAZkoKulysVWX0iUbihl64/NrJJew==
 
-"@siddomains/sid-contracts@0.1.30":
-  version "0.1.30"
-  resolved "https://registry.yarnpkg.com/@siddomains/sid-contracts/-/sid-contracts-0.1.30.tgz#4115a74a9bc55128b6911ca031670bad7b163199"
-  integrity sha512-j7+a0sFLperhwB2s/B7ntEMrB9epmOyEX4q4Jml+p94/qveLkyfryKCpQG6d70ZnDVzdLOWGBzYK5gYPS/IMhw==
+"@siddomains/sid-contracts@^0.1.31":
+  version "0.1.31"
+  resolved "https://registry.yarnpkg.com/@siddomains/sid-contracts/-/sid-contracts-0.1.31.tgz#be214bbe57f7b81084e6b4a825aa312c7c7131b0"
+  integrity sha512-4gYepgdjQCwBokXAHgZV6kyO6VVP1Mqz7Kkd+3tHHSzo3PJ1xjl4xFVYOh35b08R7u9bokj9qC17uL8dxnsiTw==
   dependencies:
     "@ensdomains/buffer" "^0.0.13"
     "@ensdomains/solsha1" "0.0.3"
