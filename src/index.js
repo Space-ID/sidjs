@@ -354,22 +354,25 @@ class Name {
 }
 
 export default class SID {
-  constructor(options) {
-    const { networkId, provider, sidAddress } = options
-    let ethersProvider
-    if (ethers.providers.Provider.isProvider(provider)) {
-      //detect ethersProvider
-      ethersProvider = provider
-    } else {
-      ethersProvider = new ethers.providers.Web3Provider(provider)
+    constructor(options) {
+        const {provider, sidAddress} = options
+        if (!utils.isAddress(sidAddress)) {
+            throw new Error('invalid sidAddress')
+        }
+        let ethersProvider
+        if (ethers.providers.Provider.isProvider(provider)) {
+            //detect ethersProvider
+            ethersProvider = provider
+        } else {
+            ethersProvider = new ethers.providers.Web3Provider(provider)
+        }
+        this.provider = ethersProvider
+        this.signer = ethersProvider.getSigner()
+        this.sid = getSIDContract({
+            address: sidAddress,
+            provider: ethersProvider,
+        })
     }
-    this.provider = ethersProvider
-    this.signer = ethersProvider.getSigner()
-    this.sid = getSIDContract({
-      address: sidAddress ? sidAddress : registries[networkId],
-      provider: ethersProvider,
-    })
-  }
 
   name(name) {
     validateName(name)
